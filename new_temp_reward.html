@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>NFTWall — Reward Claim</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface2: #f0efe9;
+      --border: #e2e0d8;
+      --border-strong: #c8c5b8;
+      --text: #1a1916;
+      --text-2: #6b6860;
+      --text-3: #a09e97;
+      --accent: #2563eb;
+      --accent-light: #eff4ff;
+      --accent-hover: #1d4ed8;
+      --success: #16a34a;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --error: #dc2626;
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+      --warn-bg: #fffbeb;
+      --warn-border: #fde68a;
+      --warn-text: #92400e;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .page-wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      padding-bottom: 32px;
+    }
+
+    .header {
+      padding: 20px 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--text);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .logo-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text-3);
+      font-weight: 400;
+    }
+
+    .status-pill {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .notice {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--warn-text);
+      line-height: 1.55;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .notice-icon {
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 14px;
+    }
+
+    .notice strong {
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .step-badge {
+      width: 24px;
+      height: 24px;
+      background: var(--text);
+      color: white;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.2px;
+    }
+
+    .field {
+      margin-bottom: 0;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin-bottom: 7px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .req-tag {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 2px 7px;
+      border-radius: 100px;
+    }
+
+    .input-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 11px 12px;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-3);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12.5px;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    input[type="text"].valid {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    input[type="text"].invalid {
+      border-color: var(--error);
+      background: var(--error-bg);
+    }
+
+    .field-hint {
+      font-size: 11.5px;
+      color: var(--text-3);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .btn-connect {
+      background: var(--surface);
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      padding: 0 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.18s;
+      flex-shrink: 0;
+      min-height: 42px;
+    }
+
+    .btn-connect:hover {
+      background: var(--surface2);
+      border-color: var(--text);
+    }
+
+    .btn-connect.connected {
+      border-color: var(--success-border);
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .tx-preview {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-top: 14px;
+      display: none;
+    }
+
+    .tx-preview.visible {
+      display: block;
+    }
+
+    .tx-preview-header {
+      padding: 9px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-2);
+      letter-spacing: 0.3px;
+      border-bottom: 1px solid var(--border);
+      background: white;
+      text-transform: uppercase;
+    }
+
+    .tx-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+
+    .tx-row:last-child {
+      border-bottom: none;
+    }
+
+    .tx-key {
+      font-size: 12px;
+      color: var(--text-2);
+      flex-shrink: 0;
+    }
+
+    .tx-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text);
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .tx-val.chip {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-family: 'DM Sans', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      word-break: normal;
+    }
+
+    .btn-claim {
+      width: 100%;
+      background: var(--text);
+      border: none;
+      border-radius: var(--radius);
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.2px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 4px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      -webkit-appearance: none;
+    }
+
+    .btn-claim:hover:not(:disabled) {
+      background: #333;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-claim:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-claim:disabled {
+      background: var(--border-strong);
+      color: var(--text-3);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-claim.success-state {
+      background: var(--success);
+    }
+
+    .log-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .log-card.visible {
+      display: block;
+    }
+
+    .log-header {
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-2);
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .log-body {
+      padding: 10px 14px;
+      max-height: 160px;
+      overflow-y: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 11.5px;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 10px;
+      padding: 3px 0;
+      line-height: 1.6;
+    }
+
+    .log-time {
+      color: var(--text-3);
+      flex-shrink: 0;
+    }
+
+    .log-msg {
+      color: var(--text-2);
+    }
+
+    .log-msg.success {
+      color: var(--success);
+    }
+
+    .log-msg.error {
+      color: var(--error);
+    }
+
+    .log-msg.info {
+      color: var(--accent);
+    }
+
+    .log-msg.warn {
+      color: #b45309;
+    }
+
+    .success-card {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      margin-top: 12px;
+      text-align: center;
+      display: none;
+      box-shadow: var(--shadow);
+    }
+
+    .success-card.visible {
+      display: block;
+    }
+
+    .success-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin: 0 auto 12px;
+      color: white;
+    }
+
+    .success-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .success-sub {
+      font-size: 13px;
+      color: #166534;
+      margin-bottom: 14px;
+    }
+
+    .hash-box {
+      background: white;
+      border: 1px solid var(--success-border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .hash-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .hash-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    .btn-explorer {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: white;
+      border: 1.5px solid var(--success-border);
+      border-radius: var(--radius-sm);
+      color: var(--success);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 10px 18px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .btn-explorer:hover {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    .footer {
+      text-align: center;
+      padding-top: 20px;
+      font-size: 12px;
+      color: var(--text-3);
+      line-height: 1.7;
+    }
+
+    .footer a {
+      color: var(--text-2);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      color: var(--text);
+    }
+
+    .footer .divider {
+      margin: 0 6px;
+      color: var(--border-strong);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card,
+    .notice,
+    .btn-claim {
+      animation: fadeUp 0.35s ease both;
+    }
+
+    .log-body::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .log-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .log-body::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 10px;
+    }
+
+    @media (max-width: 380px) {
+      body {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .card {
+        padding: 14px 12px;
+      }
+
+      .btn-claim {
+        font-size: 14px;
+        padding: 14px;
+      }
+
+      .header {
+        padding: 14px 0 14px;
+      }
+
+      .logo-name {
+        font-size: 14px;
+      }
+
+      input[type="text"] {
+        font-size: 11px;
+        padding: 10px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrap">
+
+    <div class="header">
+      <div class="logo-mark">
+        <div class="logo-icon">⬡</div>
+        <div class="logo-text">
+          <div class="logo-name">NFTWall</div>
+          <div class="logo-sub">Reward Claim</div>
+        </div>
+      </div>
+      <div class="status-pill">✓ Active</div>
+    </div>
+
+    <div class="notice">
+      <span class="notice-icon">💰</span>
+      <span><strong>Claim your rewards!</strong> Your total earned amount is shown below. Click Claim to receive your
+        OZONE tokens.</span>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-badge">1</div>
+        <div class="card-title">Contract Address</div>
+      </div>
+      <div class="field">
+        <div class="field-label">
+          Proxy Contract Address
+          <span class="req-tag">Auto-filled</span>
+        </div>
+        <input type="text" id="proxyAddress" placeholder="0x..." autocomplete="off" spellcheck="false" value="" />
+        <div class="field-hint">Your NFTWall smart contract instance</div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-badge">2</div>
+        <div class="card-title">Your Wallet</div>
+      </div>
+      <div class="field">
+        <div class="field-label">
+          Wallet Address
+          <span class="req-tag">Required</span>
+        </div>
+        <div class="input-wrap">
+          <input type="text" id="walletAddress" placeholder="Connect or paste address" autocomplete="off"
+            spellcheck="false" inputmode="text" />
+          <button class="btn-connect" id="btnConnect">Connect Wallet</button>
+        </div>
+        <div class="field-hint" id="walletStatus">Connect MetaMask to see your claimable amount</div>
+      </div>
+    </div>
+
+    <!-- Step 3: Claimable Amount -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-badge">💰</div>
+        <div class="card-title">Your Claimable Rewards</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Total Earned (myBusiness)</div>
+        <div style="font-size: 32px; font-weight: 700; color: var(--success);" id="totalClaimable">--</div>
+        <div class="field-hint">Your total rewards from the NFTWall platform</div>
+      </div>
+      <div class="field" style="margin-top: 12px;">
+        <div class="field-label">Your Stats</div>
+        <div style="display: flex; gap: 16px; margin-top: 8px;">
+          <div><span style="color: var(--text-2);">My Qty:</span> <strong id="myQty">--</strong></div>
+          <div><span style="color: var(--text-2);">Directs:</span> <strong id="directs">--</strong></div>
+          <div><span style="color: var(--text-2);">Active:</span> <strong id="isActive">--</strong></div>
+        </div>
+      </div>
+      <div class="field" style="margin-top: 12px;">
+        <div class="field-label">This Claim Amount</div>
+        <div style="font-size: 20px; font-weight: 600;" id="claimAmountDisplay">--</div>
+        <div class="field-hint">Calculated based on your remaining rewards</div>
+      </div>
+    </div>
+
+    <!-- TX Preview -->
+    <div class="tx-preview" id="txPreview">
+      <div class="tx-preview-header">Transaction Preview</div>
+      <div class="tx-row">
+        <span class="tx-key">Network</span>
+        <span class="tx-val chip">Ozone Chain</span>
+      </div>
+      <div class="tx-row">
+        <span class="tx-key">Action</span>
+        <span class="tx-val chip">claimReward</span>
+      </div>
+      <div class="tx-row">
+        <span class="tx-key">Params</span>
+        <span class="tx-val" id="previewParams">0, 160000, 0, 7</span>
+      </div>
+      <div class="tx-row">
+        <span class="tx-key">Gas Limit</span>
+        <span class="tx-val">2,097,152</span>
+      </div>
+      <div class="tx-row">
+        <span class="tx-key">To</span>
+        <span class="tx-val" id="previewTo">—</span>
+      </div>
+      <div class="tx-row">
+        <span class="tx-key">From</span>
+        <span class="tx-val" id="previewFrom">—</span>
+      </div>
+    </div>
+
+    <!-- Claim Button -->
+    <button class="btn-claim" id="btnClaim" disabled>
+      Connect Wallet to Claim
+    </button>
+
+    <!-- Status Log -->
+    <div class="log-card" id="logCard">
+      <div class="log-header">Activity Log</div>
+      <div class="log-body" id="statusLog"></div>
+    </div>
+
+    <!-- Success -->
+    <div class="success-card" id="successCard">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Reward Claimed!</div>
+      <div class="success-sub">Your reward transaction was submitted.</div>
+      <div class="hash-box">
+        <div class="hash-label">Transaction Hash</div>
+        <div class="hash-val" id="txHashVal"></div>
+      </div>
+      <a class="btn-explorer" id="explorerLink" href="#" target="_blank">
+        View on Explorer ↗
+      </a>
+    </div>
+
+    <div class="footer">
+      Made by <a href="https://x.com/gr4nth1k_x0" target="_blank">gr4nth1k_x0</a>
+      <span class="divider">·</span>
+      NFTWall · Ozone Chain
+      <br>
+      <span style="font-size:11px;">This tool claims your NFTWall rewards directly from your smart contract.</span>
+    </div>
+
+  </div>
+
+  <script>
+    const proxyInput = document.getElementById('proxyAddress');
+    const walletInput = document.getElementById('walletAddress');
+    const btnClaim = document.getElementById('btnClaim');
+    const txPreview = document.getElementById('txPreview');
+    const statusLog = document.getElementById('statusLog');
+    const logCard = document.getElementById('logCard');
+    const successCard = document.getElementById('successCard');
+
+    let currentClaimValue = 160000; // Default claim amount
+    let currentMyBusiness = 0;
+
+    function isAddress(v) { return /^0x[0-9a-fA-F]{40}$/.test(v.trim()); }
+
+    function truncate(addr) { return addr.slice(0, 8) + '...' + addr.slice(-5); }
+
+    function log(msg, type = 'info') {
+      logCard.classList.add('visible');
+      const now = new Date();
+      const t = now.toTimeString().slice(0, 8);
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `<span class="log-time">${t}</span><span class="log-msg ${type}">${msg}</span>`;
+      statusLog.appendChild(line);
+      statusLog.scrollTop = statusLog.scrollHeight;
+    }
+
+    async function fetchUserData(walletAddress) {
+      const apiUrl = `https://api.nftwall.io:2096/api/call-proc?procedureName=get_rpt_users_data&forprime=0&node=${walletAddress}`;
+      try {
+        log('Fetching your reward data from NFTWall API...', 'info');
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.success && data.data[0][0]) {
+          const userData = data.data[0][0];
+          currentMyBusiness = parseFloat(userData.myBusiness);
+
+          document.getElementById('totalClaimable').textContent = currentMyBusiness.toFixed(4) + ' OZONE';
+          document.getElementById('myQty').textContent = userData.myQty;
+          document.getElementById('directs').textContent = userData.directs;
+          document.getElementById('isActive').textContent = userData.isActive ? 'Yes' : 'No';
+
+          // Calculate claim amount - each 160000 gives ~1.4 OZONE
+          // Max claim is 1,000,000 param2 (~8.75 OZONE)
+          let claimsPossible = Math.floor(currentMyBusiness / 1.4);
+          if (claimsPossible > 6) claimsPossible = 6; // Cap at ~8.4 OZONE per tx
+
+          currentClaimValue = 160000 * (claimsPossible || 1);
+          const claimAmountOzone = (currentClaimValue / 160000) * 1.4;
+
+          document.getElementById('claimAmountDisplay').textContent = claimAmountOzone.toFixed(2) + ' OZONE';
+          document.getElementById('previewParams').textContent = `0, ${currentClaimValue}, 0, 7`;
+
+          log(`Found ${currentMyBusiness.toFixed(2)} OZONE available! Will claim ~${claimAmountOzone.toFixed(2)} OZONE.`, 'success');
+
+          // Auto-fill proxy address from API response
+          if (userData.uinst && !proxyInput.value.trim()) {
+            proxyInput.value = userData.uinst;
+            checkReady();
+          }
+
+          return true;
+        } else {
+          log('Could not fetch reward data. Using default claim amount.', 'warn');
+          document.getElementById('totalClaimable').textContent = 'Unable to fetch';
+          return false;
+        }
+      } catch (err) {
+        log('API error: ' + err.message + '. Using default claim.', 'warn');
+        document.getElementById('totalClaimable').textContent = 'API Error';
+        return false;
+      }
+    }
+
+    function checkReady() {
+      const p = proxyInput.value.trim();
+      const w = walletInput.value.trim();
+      const ready = isAddress(p) && isAddress(w);
+      btnClaim.disabled = !ready;
+
+      if (ready) {
+        btnClaim.innerHTML = '💰 Claim Reward';
+      } else {
+        btnClaim.innerHTML = 'Connect Wallet to Claim';
+      }
+
+      if (p.length > 2) proxyInput.className = isAddress(p) ? 'valid' : 'invalid';
+      else proxyInput.className = '';
+      if (w.length > 2) walletInput.className = isAddress(w) ? 'valid' : 'invalid';
+      else walletInput.className = '';
+
+      if (ready) {
+        txPreview.classList.add('visible');
+        document.getElementById('previewTo').textContent = truncate(p);
+        document.getElementById('previewFrom').textContent = truncate(w);
+      } else {
+        txPreview.classList.remove('visible');
+      }
+    }
+
+    proxyInput.addEventListener('input', checkReady);
+    walletInput.addEventListener('input', checkReady);
+
+    async function connectWallet() {
+      const btn = document.getElementById('btnConnect');
+      if (!window.ethereum) {
+        log('No EVM wallet found. Please install MetaMask.', 'error');
+        return;
+      }
+      try {
+        btn.textContent = '...';
+        btn.disabled = true;
+        log('Requesting wallet access...', 'info');
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        if (accounts.length > 0) {
+          walletInput.value = accounts[0];
+          document.getElementById('walletStatus').textContent = '✓ Connected: ' + truncate(accounts[0]);
+          btn.textContent = 'Connected ✓';
+          btn.classList.add('connected');
+
+          log('Wallet connected: ' + accounts[0], 'success');
+
+          // Fetch user data from API
+          await fetchUserData(accounts[0]);
+
+          checkReady();
+        }
+      } catch (err) {
+        btn.textContent = 'Connect Wallet';
+        btn.disabled = false;
+        log('Connection rejected: ' + err.message, 'error');
+      }
+    }
+
+    document.getElementById('btnConnect').onclick = connectWallet;
+
+    async function claimReward() {
+      const proxyAddress = proxyInput.value.trim();
+      const yourAddress = walletInput.value.trim();
+
+      if (!isAddress(proxyAddress) || !isAddress(yourAddress)) {
+        log('Invalid address(es). Please check and try again.', 'error');
+        return;
+      }
+
+      // Refresh user data before claiming
+      await fetchUserData(yourAddress);
+
+      if (currentMyBusiness < 1.4) {
+        log(`Only ${currentMyBusiness.toFixed(2)} OZONE available. Cannot claim.`, 'error');
+        return;
+      }
+
+      btnClaim.disabled = true;
+      btnClaim.innerHTML = '<div class="spinner"></div> Sending Transaction...';
+      successCard.classList.remove('visible');
+
+      const hexValue = currentClaimValue.toString(16).padStart(64, '0');
+      const calldata = "0xa3e884b0"
+        + "0000000000000000000000000000000000000000000000000000000000000000"
+        + hexValue
+        + "0000000000000000000000000000000000000000000000000000000000000000"
+        + "0000000000000000000000000000000000000000000000000000000000000007";
+
+      log('Building transaction...', 'info');
+      log(`Claiming ~${(currentClaimValue / 160000 * 1.4).toFixed(2)} OZONE`, 'info');
+      log('To: ' + proxyAddress, 'info');
+      log('Awaiting wallet confirmation...', 'warn');
+
+      try {
+        if (!window.ethereum) throw new Error('No EVM wallet found. Please install MetaMask.');
+
+        const tx = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: yourAddress,
+            to: proxyAddress,
+            data: calldata,
+            gas: '0x200000'
+          }]
+        });
+
+        log('Transaction submitted!', 'success');
+        log('Hash: ' + tx, 'success');
+
+        document.getElementById('txHashVal').textContent = tx;
+        const explorerUrl = 'https://explorer.ozonechain.com/tx/' + tx;
+        document.getElementById('explorerLink').href = explorerUrl;
+        successCard.classList.add('visible');
+
+        btnClaim.classList.add('success-state');
+        btnClaim.innerHTML = '✓ Reward Claimed';
+
+      } catch (err) {
+        log('Error: ' + (err.message || JSON.stringify(err)), 'error');
+        btnClaim.disabled = false;
+        btnClaim.innerHTML = '💰 Claim Reward';
+        btnClaim.classList.remove('success-state');
+      }
+    }
+
+    window.claimReward = claimReward;
+  </script>
+</body>
+
+</html>
