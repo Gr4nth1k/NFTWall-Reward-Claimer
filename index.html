@@ -6,6 +6,88 @@
   <title>NFTWall — Reward Claim</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+
+    /* Modal overlay & container */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  font-family: 'DM Sans', sans-serif;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.modal-container {
+  background: var(--surface);
+  max-width: 420px;
+  width: 100%;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 35px -12px rgba(0,0,0,0.3);
+  padding: 24px 22px 28px;
+  text-align: center;
+  animation: fadeUp 0.25s ease;
+}
+.modal-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+}
+.modal-content {
+  text-align: left;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-2);
+  border-left: 3px solid #dc2626;
+}
+.modal-content p {
+  margin-bottom: 10px;
+}
+.modal-content p:last-child {
+  margin-bottom: 0;
+}
+.modal-content strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.modal-accept-btn {
+  background: var(--text);
+  border: none;
+  border-radius: 60px;
+  padding: 12px 22px;
+  font-weight: 600;
+  font-size: 15px;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.modal-accept-btn:hover {
+  background: #2c2b28;
+  transform: translateY(-1px);
+}
+.modal-accept-btn:active {
+  transform: translateY(0);
+}
+    
     :root {
       --bg: #f5f4f0;
       --surface: #ffffff;
@@ -234,6 +316,20 @@
     </div>
 
   </div>
+  <!-- Disclaimer Modal - Temporary Method Warning -->
+<div id="disclaimerModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-icon">⚠️</div>
+    <h3 class="modal-title">Important Disclaimer</h3>
+    <div class="modal-content">
+      <p><strong>This is a temporary method to claim your daily reward.</strong></p>
+      <p>This website has <strong>no extra access</strong> to your NFTWall or any other contracts. It only triggers the claim function on the blockchain.</p>
+      <p>As the developer, I am <strong>not responsible</strong> for any issues, errors, or unexpected outcomes that may occur. The tool is provided "as is" and all operations are normal and considered safe.</p>
+      <p>By proceeding, you acknowledge that you understand and accept these terms.</p>
+    </div>
+    <button id="acceptDisclaimerBtn" class="modal-accept-btn">I Understand & Proceed</button>
+  </div>
+</div>
 
   <script>
     const proxyInput = document.getElementById('proxyAddress');
@@ -330,7 +426,7 @@
         + "0000000000000000000000000000000000000000000000000000000000000007";
 
       log('Building transaction...', 'info');
-      log('Claiming 1.4 OZONE reward', 'info');
+      log('Claiming OZONE reward', 'info');
       log('To: ' + proxyAddress, 'info');
       log('Awaiting wallet confirmation...', 'warn');
 
@@ -366,6 +462,39 @@
 
     document.getElementById('btnConnect').onclick = connectWallet;
     btnClaim.onclick = claimReward;
+
+
+    // Disclaimer Modal - session-based acknowledgment
+(function setupDisclaimer() {
+  const modal = document.getElementById('disclaimerModal');
+  const acceptBtn = document.getElementById('acceptDisclaimerBtn');
+  
+  // Check if user already accepted in this session (sessionStorage)
+  const hasAccepted = sessionStorage.getItem('disclaimerAccepted');
+  
+  if (!hasAccepted && modal) {
+    // Show modal
+    modal.style.display = 'flex';
+    // Disable background scrolling
+    document.body.style.overflow = 'hidden';
+  } else if (modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  
+  if (acceptBtn) {
+    acceptBtn.addEventListener('click', function() {
+      // Store acceptance for current session
+      sessionStorage.setItem('disclaimerAccepted', 'true');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+      // Optional: log that user accepted
+      if (typeof log === 'function') {
+        log('Disclaimer acknowledged — proceeding with claim tool.', 'info');
+      }
+    });
+  }
+})();
   </script>
 </body>
 </html>
