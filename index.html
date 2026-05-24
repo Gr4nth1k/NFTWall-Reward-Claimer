@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2WZGENWSFM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2WZGENWSFM');
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>NFTWall — Reward Claim</title>
@@ -396,6 +404,7 @@
           btn.textContent = 'Connected ✓';
           btn.classList.add('connected');
           log('Wallet connected: ' + accounts[0], 'success');
+          gtag('event', 'wallet_connected', { 'event_category': 'engagement' });
           checkReady();
         }
       } catch (err) {
@@ -444,6 +453,7 @@
         });
 
         log('Transaction submitted!', 'success');
+        gtag('event', 'claim_submitted', { 'event_category': 'engagement', 'event_label': proxyAddress, 'value': 1 });
         log('Hash: ' + tx, 'success');
 
         document.getElementById('txHashVal').textContent = tx;
@@ -496,15 +506,7 @@
   }
 })();
   </script>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2WZGENWSFM"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-2WZGENWSFM');
-</script>
 
 </body>
 </html>
